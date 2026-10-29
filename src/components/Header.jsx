@@ -15,6 +15,17 @@ export default function Header({ onSelectServicePage, onSelectGalleryPage, onGoH
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close mobile menu on resize to laptop/desktop (> 1080px)
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1080) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Close mobile menu on Escape key
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -87,8 +98,8 @@ export default function Header({ onSelectServicePage, onSelectGalleryPage, onGoH
             />
           </button>
 
-          {/* Desktop / Laptop Nav (No Dropdown) */}
-          <div className="desktop-nav-container" style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0.75rem, 1.5vw, 1.5rem)' }}>
+          {/* Desktop / Laptop Nav (No Dropdown, Clean Links) */}
+          <div className="desktop-nav-container">
             {navLinks.map(link => (
               <button 
                 key={link.name}
@@ -109,7 +120,7 @@ export default function Header({ onSelectServicePage, onSelectGalleryPage, onGoH
             </a>
           </div>
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Menu Toggle (Only on Mobile/Tablet screens <= 1080px, strictly hidden on Laptop/Desktop) */}
           <button 
             className="mobile-toggle-btn" 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
@@ -119,7 +130,6 @@ export default function Header({ onSelectServicePage, onSelectGalleryPage, onGoH
               padding: '0.5rem',
               minWidth: '44px',
               minHeight: '44px',
-              display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               borderRadius: 'var(--radius-sm)'
@@ -129,9 +139,10 @@ export default function Header({ onSelectServicePage, onSelectGalleryPage, onGoH
           </button>
         </div>
 
-        {/* Mobile Backdrop Overlay */}
+        {/* Mobile Backdrop Overlay (Strictly hidden on Laptop/Desktop) */}
         {mobileMenuOpen && (
           <div 
+            className="mobile-backdrop"
             onClick={() => setMobileMenuOpen(false)}
             aria-hidden="true"
             style={{
@@ -145,7 +156,7 @@ export default function Header({ onSelectServicePage, onSelectGalleryPage, onGoH
           />
         )}
 
-        {/* Mobile Menu Dropdown Drawer */}
+        {/* Mobile Menu Dropdown Drawer (Strictly hidden on Laptop/Desktop) */}
         {mobileMenuOpen && (
           <div 
             className="animate-fade-in mobile-drawer" 
@@ -255,11 +266,34 @@ export default function Header({ onSelectServicePage, onSelectGalleryPage, onGoH
       </nav>
 
       <style>{`
-        .desktop-nav-container { display: flex; }
-        .mobile-toggle-btn { display: none; }
+        .desktop-nav-container {
+          display: flex !important;
+          align-items: center;
+          gap: clamp(0.75rem, 1.5vw, 1.5rem);
+        }
+        .mobile-toggle-btn {
+          display: none !important;
+        }
+        .mobile-drawer {
+          display: none !important;
+        }
+        .mobile-backdrop {
+          display: none !important;
+        }
+
         @media (max-width: 1080px) {
-          .desktop-nav-container { display: none !important; }
-          .mobile-toggle-btn { display: flex !important; }
+          .desktop-nav-container {
+            display: none !important;
+          }
+          .mobile-toggle-btn {
+            display: flex !important;
+          }
+          .mobile-drawer {
+            display: block !important;
+          }
+          .mobile-backdrop {
+            display: block !important;
+          }
         }
       `}</style>
     </header>
