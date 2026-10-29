@@ -5,7 +5,6 @@ import { HOSPITAL_INFO, SERVICES } from '../data/hospitalData';
 export default function Header({ onSelectServicePage, onSelectGalleryPage, onGoHome, onSelectAboutPage }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
 
   useEffect(() => {
@@ -21,7 +20,6 @@ export default function Header({ onSelectServicePage, onSelectGalleryPage, onGoH
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         setMobileMenuOpen(false);
-        setServicesDropdownOpen(false);
       }
     };
     if (mobileMenuOpen) {
@@ -39,7 +37,7 @@ export default function Header({ onSelectServicePage, onSelectGalleryPage, onGoH
   const navLinks = [
     { name: 'Home', action: () => onGoHome('#home') },
     { name: 'About Us', action: onSelectAboutPage },
-    { name: 'Services', isDropdown: true },
+    { name: 'Services', action: () => onGoHome('#services'), isMobileDropdown: true },
     { name: 'Why Choose Us', action: () => onGoHome('#why-us') },
     { name: 'Testimonials', action: () => onGoHome('#testimonials') },
     { name: 'Gallery', action: onSelectGalleryPage },
@@ -49,13 +47,11 @@ export default function Header({ onSelectServicePage, onSelectGalleryPage, onGoH
 
   const handleNavClick = (link) => {
     setMobileMenuOpen(false);
-    setServicesDropdownOpen(false);
     if (link.action) link.action();
   };
 
   const handleServiceClick = (serviceId) => {
     setMobileMenuOpen(false);
-    setServicesDropdownOpen(false);
     setMobileServicesOpen(false);
     onSelectServicePage(serviceId);
   };
@@ -91,54 +87,17 @@ export default function Header({ onSelectServicePage, onSelectGalleryPage, onGoH
             />
           </button>
 
-          {/* Desktop Nav */}
+          {/* Desktop / Laptop Nav (No Dropdown) */}
           <div className="desktop-nav-container" style={{ display: 'flex', alignItems: 'center', gap: 'clamp(0.75rem, 1.5vw, 1.5rem)' }}>
             {navLinks.map(link => (
-              <div key={link.name} style={{ position: 'relative' }}>
-                {link.isDropdown ? (
-                  <div onMouseEnter={() => setServicesDropdownOpen(true)} onMouseLeave={() => setServicesDropdownOpen(false)}>
-                    <button 
-                      className="nav-link" 
-                      onClick={() => onGoHome('#services')} 
-                      style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', minHeight: '40px' }}
-                    >
-                      {link.name} <ChevronDown size={14} />
-                    </button>
-                    {servicesDropdownOpen && (
-                      <div className="animate-fade-in" style={{
-                        position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)',
-                        width: '270px', background: 'var(--color-surface)', border: '1px solid var(--color-border)',
-                        borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-lg)', padding: '0.5rem 0',
-                        zIndex: 1100
-                      }}>
-                        {SERVICES.map(s => (
-                          <button 
-                            key={s.id} 
-                            onClick={() => handleServiceClick(s.id)} 
-                            style={{
-                              display: 'block', width: '100%', textAlign: 'left', padding: '0.65rem 1.2rem',
-                              fontSize: '0.9rem', color: 'var(--color-text-main)', borderBottom: '1px solid var(--color-border-light)',
-                              transition: 'background-color 0.2s ease, color 0.2s ease'
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'var(--color-bg-main)'; e.currentTarget.style.color = 'var(--color-secondary)'; }}
-                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--color-text-main)'; }}
-                          >
-                            {s.title}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <button 
-                    className="nav-link" 
-                    onClick={() => handleNavClick(link)}
-                    style={{ minHeight: '40px' }}
-                  >
-                    {link.name}
-                  </button>
-                )}
-              </div>
+              <button 
+                key={link.name}
+                className="nav-link" 
+                onClick={() => handleNavClick(link)}
+                style={{ minHeight: '40px' }}
+              >
+                {link.name}
+              </button>
             ))}
             
             <a 
@@ -207,7 +166,7 @@ export default function Header({ onSelectServicePage, onSelectGalleryPage, onGoH
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
               {navLinks.map(link => (
                 <div key={link.name}>
-                  {link.isDropdown ? (
+                  {link.isMobileDropdown ? (
                     <div>
                       <button 
                         onClick={() => setMobileServicesOpen(!mobileServicesOpen)} 
